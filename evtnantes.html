@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <title>EvtNantes</title>
+  </head>
+  <body>
+    <form id="app"  >
+      <div class="bar">
+
+          <input type="text" v-model="searchString" placeholder="Enter your search terms" style="width: 50%; height: 0.4em; float: left; padding-top: 20px"/>
+
+          <a class="list-icon" v-bind:class="{ 'active': layout == 'list'}" v-on:click="layout = 'list'"></a>
+          <a class="grid-icon" v-bind:class="{ 'active': layout == 'grid'}" v-on:click="layout = 'grid'"></a>
+
+      </div>
+
+    <ul v-if="layout == 'grid'" class="grid">
+        <li v-for="record in filteredResult">
+            <a v-bind:href="record.fields.lien_agenda" target="_blank"><img v-bind:src="record.fields.media_1" /></a>
+          </li>
+    </ul>
+
+    <ul v-if="layout == 'list'" class="list">
+
+        <!-- A compact view smaller photos and titles -->
+        <li v-for="record in filteredResult">
+          <a v-bind:href="record.fields.lien_agenda" target="_blank"><img v-bind:src="record.fields.media_1" /></a>
+          <p>Nom : {{record.fields.nom}}</p>
+          <p>Lieu: {{record.fields.lieu}}</p>
+          <p>Date: {{record.fields.date}}</p>
+          <p>Heure: {{record.fields.heure_debut}}</p>
+        </li>
+      </ul>
+      </form>
+
+      <!--Import scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <script>
+
+      var apiURL = 'https://data.nantesmetropole.fr/api/records/1.0/search/?dataset=244400404_agenda-evenements-nantes-nantes-metropole&rows=10&facet=emetteur&facet=rubrique&facet=lieu&facet=ville'
+    new Vue({
+        el: '#app',
+        data: {
+            message: 'Hello World',
+            layout: 'list',
+            result: null,
+            searchString : '',
+
+            boites: [{
+            "title": "What You Need To Know About CSS Variables",
+            "url": "https://tutorialzine.com/2016/03/what-you-need-to-know-about-css-variables/",
+            "image": {
+                "large": "https://tutorialzine.com/media/2016/03/css-variables.jpg",
+                "small": "https://tutorialzine.com/media/2016/03/css-variables.jpg"
+            }
+        }]
+      },
+
+      created: function () {
+		    this.fetchData()
+		  },
+
+      computed: {
+        // A computed property that holds only those articles that match the searchString.
+        filteredResult: function () {
+            var result_array = this.result,
+                searchString = this.searchString;
+
+            if(!searchString){
+                return result_array;
+            }
+
+            searchString = searchString.trim().toLowerCase();
+
+            result_array = result_array.filter(function(item){
+                if(item.fields.nom.toLowerCase().indexOf(searchString) !== -1){
+                    return item;
+                }
+            })
+
+            // Return an array with the filtered data.
+            return result_array;;
+        }
+    },
+
+      methods: {
+        fetchData: function() {
+          var header = {
+            headers: {'Authorization': "bearer " + "ccee32454a460df6f78c69354d4e193272ceca3e62ea23ed5af85a56"}
+          }
+   			  axios.get(apiURL, header).then(response => (this.result = response.data.records))
+        }
+      }
+    })
+    </script>
+  </body>
+</html>
