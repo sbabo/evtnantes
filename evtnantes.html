@@ -29,39 +29,33 @@
           <a v-bind:href="record.fields.lien_agenda" target="_blank"><img v-bind:src="record.fields.media_1" /></a>
           <p>Nom : {{record.fields.nom}}</p>
           <p>Lieu: {{record.fields.lieu}}</p>
-          <p>Date: {{record.fields.date}}</p>
+          <p>Date: {{moment(record.fields.date).format('DD/MM/YYYY')}}</p>
           <p>Heure: {{record.fields.heure_debut}}</p>
         </li>
       </ul>
       </form>
 
       <!--Import scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+      <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.0/locale/fr.js"></script>
 
     <script>
 
       var apiURL = 'https://data.nantesmetropole.fr/api/records/1.0/search/?dataset=244400404_agenda-evenements-nantes-nantes-metropole&rows=10&facet=emetteur&facet=rubrique&facet=lieu&facet=ville'
+      Vue.prototype.moment = moment
     new Vue({
         el: '#app',
         data: {
-            message: 'Hello World',
             layout: 'list',
             result: null,
             searchString : '',
 
-            boites: [{
-            "title": "What You Need To Know About CSS Variables",
-            "url": "https://tutorialzine.com/2016/03/what-you-need-to-know-about-css-variables/",
-            "image": {
-                "large": "https://tutorialzine.com/media/2016/03/css-variables.jpg",
-                "small": "https://tutorialzine.com/media/2016/03/css-variables.jpg"
-            }
-        }]
       },
 
       created: function () {
-		    this.fetchData()
+		    this.fetchData();
 		  },
 
       computed: {
@@ -81,7 +75,6 @@
                     return item;
                 }
             })
-
             // Return an array with the filtered data.
             return result_array;;
         }
